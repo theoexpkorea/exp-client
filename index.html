@@ -255,7 +255,7 @@ const CONFIG = {
 
 /* ===================== 초기화 ===================== */
 // URL에서 고객코드 읽기
-const params  = new URLSearchParams(location.search);
+const params   = new URLSearchParams(location.search);
 const clientId = params.get("id") || "";
 
 // 연락 버튼 설정
@@ -377,6 +377,11 @@ async function boot(){
     if(res.mapUrl){
       document.getElementById("mapLink").href = res.mapUrl;
       document.getElementById("mapBar").style.display = "block";
+    }
+
+    // 중개사면 연락 버튼 숨기기
+    if(res.isAgent){
+      document.querySelector(".contact-bar").style.display = "none";
     }
 
     render(res.items || []);
