@@ -110,7 +110,7 @@
     position:fixed; bottom:0; left:0; right:0; z-index:40;
     padding:12px 16px calc(12px + env(safe-area-inset-bottom));
     background:var(--surface); border-top:1px solid var(--line);
-    display:flex; gap:10px;
+    display:none; gap:10px;
   }
   .contact-btn{
     flex:1; height:52px; border:0; border-radius:13px;
@@ -379,9 +379,9 @@ async function boot(){
       document.getElementById("mapBar").style.display = "block";
     }
 
-    // 중개사면 연락 버튼 숨기기
-    if(res.isAgent){
-      document.querySelector(".contact-bar").style.display = "none";
+    // 중개사면 버튼 숨김, 고객이면 표시
+    if(!res.isAgent){
+      document.querySelector(".contact-bar").style.display = "flex";
     }
 
     render(res.items || []);
