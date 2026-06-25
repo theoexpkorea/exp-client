@@ -70,9 +70,10 @@
   .form-input, .form-select, .form-textarea{
     width:100%; height:52px; border:1.5px solid var(--line); border-radius:12px;
     background:var(--surface); padding:0 14px;
-    font-size:15px; font-family:inherit; color:var(--ink);
+    font-size:14px; font-family:inherit; color:var(--ink);
     outline:0; transition:border-color .15s;
     appearance:none; -webkit-appearance:none;
+    accent-color: var(--accent);
   }
   .form-input:focus, .form-select:focus, .form-textarea:focus{
     border-color:var(--accent); background:#fff;
@@ -85,6 +86,11 @@
     background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23727A86' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
     background-repeat:no-repeat; background-position:right 14px center;
     padding-right:36px; cursor:pointer;
+    font-size:14px;
+  }
+  /* 네이티브 select 드롭다운 옵션 글씨 크기 */
+  .form-select option{
+    font-size:14px;
   }
 
   /* 전화번호 */
@@ -105,6 +111,7 @@
     width:18px; height:18px; border:1.5px solid var(--line); border-radius:5px;
     appearance:none; -webkit-appearance:none; cursor:pointer; flex-shrink:0; margin-top:1px;
     background:var(--surface); transition:all .15s;
+    accent-color: var(--accent);
   }
   .check-item input[type=checkbox]:checked{
     background:var(--accent); border-color:var(--accent);
@@ -318,8 +325,6 @@ function validate(){
   const telOk = tel.length >= 10;
   showErr('tel', !telOk);
   if(!telOk) ok = false;
-
-  const source = '';
 
   const typeId = currentTab==='buy' ? 'buy-type' : 'sell-type';
   const errId = currentTab==='buy' ? 'buy-type' : 'sell-type';
