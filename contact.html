@@ -439,22 +439,32 @@ async function submitForm(){
     date: new Date().toLocaleDateString('ko-KR')
   };
 
-  try {
-    const cb = '__contact_cb_' + Date.now();
-    await new Promise((resolve, reject) => {
+  function submitOnce(timeoutMs){
+    return new Promise((resolve, reject) => {
+      const cb = '__contact_cb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
       const s = document.createElement('script');
       window[cb] = (res) => { delete window[cb]; s.remove(); resolve(res); };
-      s.onerror = () => { delete window[cb]; s.remove(); reject(); };
+      s.onerror = () => { delete window[cb]; s.remove(); reject(new Error('load fail')); };
       const params = new URLSearchParams({callback: cb, ...data});
       s.src = SCRIPT_URL + '?' + params.toString();
       document.head.appendChild(s);
-      setTimeout(() => reject(), 10000);
+      setTimeout(() => reject(new Error('timeout')), timeoutMs);
     });
+  }
+
+  try {
+    try{
+      await submitOnce(20000);
+    }catch(e){
+      btn.textContent = '재시도 중...';
+      await new Promise(r => setTimeout(r, 800));
+      await submitOnce(20000);
+    }
     document.getElementById('formWrap').style.display = 'none';
     document.getElementById('doneScreen').style.display = 'block';
   } catch(e) {
     btn.disabled = false; btn.textContent = '상담 신청하기';
-    alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+    alert('연결이 원활하지 않습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 </script>

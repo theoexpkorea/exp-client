@@ -136,6 +136,14 @@
     border-top-color:var(--accent); border-radius:50%; animation:spin .7s linear infinite; margin-bottom:12px}
   @keyframes spin{to{transform:rotate(360deg)}}
 
+  /* 재시도 버튼 (에러 화면용) */
+  .retry-btn{
+    margin-top:16px; padding:11px 22px; border:1.5px solid var(--accent);
+    border-radius:11px; background:var(--accent-soft); color:var(--accent);
+    font-size:14px; font-weight:800; cursor:pointer; font-family:inherit;
+  }
+  .retry-btn:active{opacity:.8}
+
   /* 비번 화면 */
   #lockScreen{
     position:fixed; inset:0; z-index:999;
@@ -340,10 +348,10 @@ function render(items){
     </div>`).join("");
 }
 
-/* ===================== 데이터 로드 (JSONP) ===================== */
-function loadData(url){
+/* ===================== 데이터 로드 (JSONP + 재시도) ===================== */
+function loadDataOnce(url, timeoutMs){
   return new Promise(function(resolve,reject){
-    const cb="__client_cb_"+Date.now();
+    const cb="__client_cb_"+Date.now()+"_"+Math.floor(Math.random()*100000);
     const s=document.createElement("script");
     let done=false;
     window[cb]=function(data){ done=true; cleanup(); resolve(data); };
@@ -352,8 +360,28 @@ function loadData(url){
     const sep=url.indexOf("?")>=0?"&":"?";
     s.src=url+sep+"callback="+cb;
     document.head.appendChild(s);
-    setTimeout(function(){ if(!done){ cleanup(); reject(new Error("timeout")); } },12000);
+    setTimeout(function(){ if(!done){ cleanup(); reject(new Error("timeout")); } }, timeoutMs);
   });
+}
+
+// 타임아웃 20초로 연장 + 실패 시 1회 자동 재시도(짧은 대기 후)
+async function loadData(url){
+  try{
+    return await loadDataOnce(url, 20000);
+  }catch(e){
+    await new Promise(r=>setTimeout(r, 800));
+    return await loadDataOnce(url, 20000);
+  }
+}
+
+/* ===================== 에러 화면 ===================== */
+function showLoadError(){
+  document.getElementById("list").innerHTML =
+    `<div class="empty">
+      <div class="em-t">연결이 원활하지 않습니다</div>
+      <div class="em-s">네트워크 상태를 확인하고 다시 시도해 주세요</div>
+      <button class="retry-btn" onclick="boot()">다시 시도</button>
+    </div>`;
 }
 
 /* ===================== 부팅 ===================== */
@@ -363,6 +391,12 @@ async function boot(){
       `<div class="empty"><div class="em-t">잘못된 접근입니다</div><div class="em-s">담당자에게 링크를 다시 요청해 주세요</div></div>`;
     return;
   }
+
+  document.getElementById("list").innerHTML = `
+    <div class="loading">
+      <div class="sp"></div>
+      <div>매물 불러오는 중...</div>
+    </div>`;
 
   try{
     const url = CONFIG.DATA_URL + "?mode=client&id=" + encodeURIComponent(clientId);
@@ -395,8 +429,7 @@ async function boot(){
     render(res.items || []);
 
   } catch(e){
-    document.getElementById("list").innerHTML=
-      `<div class="empty"><div class="em-t">연결 오류</div><div class="em-s">잠시 후 다시 시도해 주세요</div></div>`;
+    showLoadError();
   }
 }
 
