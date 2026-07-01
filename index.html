@@ -226,7 +226,7 @@
 <header>
   <div class="head-row">
     <div class="brand">
-      <span class="logo" onclick="location.href='https://theoexpkorea.github.io/exp-client/'">the<span class="o">o</span></span>
+      <span class="logo" onclick="const p=new URLSearchParams(location.search); const id=p.get('id'); if(id) location.href=location.pathname+'?id='+id;">the<span class="o">o</span></span>
       <span class="by">추천매물 · eXp</span>
     </div>
     <div class="count"><b id="cnt">0</b>건</div>
