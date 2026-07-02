@@ -120,6 +120,28 @@
   }
   .doc-btn:active{opacity:.75}
 
+  /* 중개사 추천 멘트 팝업 */
+  .note-overlay{
+    position:fixed; inset:0; z-index:200; background:rgba(15,18,24,.45);
+    display:none; align-items:flex-end; justify-content:center;
+  }
+  .note-overlay.show{display:flex}
+  .note-sheet{
+    width:100%; max-width:480px; background:var(--surface);
+    border-radius:18px 18px 0 0; padding:18px 20px calc(20px + env(safe-area-inset-bottom));
+    box-sizing:border-box; animation:noteUp .18s ease-out;
+  }
+  @keyframes noteUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+  .note-handle{width:36px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
+  .note-head{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-size:14.5px;font-weight:800;color:var(--ink)}
+  .note-body{
+    background:var(--accent-soft); border-radius:12px; padding:14px 15px;
+    font-size:14px; line-height:1.65; color:var(--ink); white-space:pre-line;
+  }
+  .note-agent{display:flex;align-items:center;gap:6px;margin-top:12px}
+  .note-agent .av{width:20px;height:20px;border-radius:50%;background:var(--accent);color:#fff;font-size:10px;font-weight:800;display:flex;align-items:center;justify-content:center}
+  .note-agent span{font-size:12px;color:var(--muted);font-weight:600}
+
   .empty{text-align:center; padding:64px 24px; color:var(--muted)}
   .empty .em-t{font-size:15px; font-weight:700; color:var(--ink); margin-bottom:6px}
   .empty .em-s{font-size:13px}
@@ -272,6 +294,16 @@
   </a>
 </div>
 
+<!-- 중개사 추천 멘트 팝업 -->
+<div class="note-overlay" id="noteOverlay" onclick="if(event.target===this)closeNote()">
+  <div class="note-sheet">
+    <div class="note-handle"></div>
+    <div class="note-head">🗨️ 중개사 추천 코멘트</div>
+    <div class="note-body" id="noteBody"></div>
+    <div class="note-agent"><div class="av">T</div><span>theo 중개사 추천</span></div>
+  </div>
+</div>
+
 <script>
 /* ===================== 설정 ===================== */
 const CONFIG = {
@@ -334,14 +366,16 @@ function typeStyle(t){
 }
 
 /* ===================== 렌더 ===================== */
+let currentItems=[];
 function render(items){
   const list=document.getElementById("list");
   document.getElementById("cnt").textContent=items.length;
+  currentItems=items;
   if(!items.length){
     list.innerHTML=`<div class="empty"><div class="em-t">추천 매물이 없습니다</div><div class="em-s">담당자에게 문의해 주세요</div></div>`;
     return;
   }
-  list.innerHTML=items.map(d=>`
+  list.innerHTML=items.map((d,idx)=>`
     <div class="card">
       <div class="card-top">
         <span class="tag t-type" style="${typeStyle(d.type)}">${d.type}</span>
@@ -356,11 +390,23 @@ function render(items){
         <div class="m"><div class="k">실측면적</div><div class="v tnum">${fnum(d.pyeong,1)}평</div></div>
         <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
       </div>
-      ${(d.bdoc||d.rdoc) ? `<div class="doc-btns">
+      ${(d.bdoc||d.rdoc||d.note) ? `<div class="doc-btns">
         ${d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : ''}
         ${d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : ''}
+        ${d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''}
       </div>` : ''}
     </div>`).join("");
+}
+
+/* ===================== 중개사 추천 멘트 팝업 ===================== */
+function openNote(idx){
+  const d=currentItems[idx];
+  if(!d||!d.note) return;
+  document.getElementById("noteBody").textContent=d.note;
+  document.getElementById("noteOverlay").classList.add("show");
+}
+function closeNote(){
+  document.getElementById("noteOverlay").classList.remove("show");
 }
 
 /* ===================== 데이터 로드 (JSONP + 재시도) ===================== */
