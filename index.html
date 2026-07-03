@@ -456,45 +456,63 @@ async function boot(){
     return;
   }
 
-  document.getElementById("list").innerHTML = `
-    <div class="loading">
-      <div class="sp"></div>
-      <div>매물 불러오는 중...</div>
-    </div>`;
+  const cacheKey = "theo_client_cache_" + clientId;
+  let cachedRes = null;
+  try{
+    const raw = localStorage.getItem(cacheKey);
+    if(raw) cachedRes = JSON.parse(raw);
+  }catch(e){}
+
+  if(cachedRes && !cachedRes.error){
+    applyResult(cachedRes);
+  } else {
+    document.getElementById("list").innerHTML = `
+      <div class="loading">
+        <div class="sp"></div>
+        <div>매물 불러오는 중...</div>
+      </div>`;
+  }
 
   try{
     const url = CONFIG.DATA_URL + "?mode=client&id=" + encodeURIComponent(clientId);
     const res  = await loadData(url);
 
     if(res.error){
-      document.getElementById("list").innerHTML=
-        `<div class="empty"><div class="em-t">매물을 불러올 수 없습니다</div><div class="em-s">${res.error}</div></div>`;
+      if(!cachedRes){
+        document.getElementById("list").innerHTML=
+          `<div class="empty"><div class="em-t">매물을 불러올 수 없습니다</div><div class="em-s">${res.error}</div></div>`;
+      }
       return;
     }
 
-    // 고객명 배너
-    if(res.clientName){
-      document.getElementById("clientName").textContent = res.clientName + " 고객님 추천 매물";
-      document.getElementById("clientDate").textContent = new Date().toLocaleDateString("ko-KR");
-      document.getElementById("clientBanner").style.display = "flex";
-    }
-
-    // 지도 버튼
-    if(res.mapUrl){
-      document.getElementById("mapLink").href = res.mapUrl;
-      document.getElementById("mapBar").style.display = "block";
-    }
-
-    // 중개사면 버튼 숨김, 고객이면 표시
-    if(!res.isAgent){
-      document.querySelector(".contact-bar").style.display = "flex";
-    }
-
-    render(res.items || []);
+    applyResult(res);
+    try{ localStorage.setItem(cacheKey, JSON.stringify(res)); }catch(e){}
 
   } catch(e){
-    showLoadError();
+    if(!cachedRes) showLoadError();
   }
+}
+
+function applyResult(res){
+  // 고객명 배너
+  if(res.clientName){
+    document.getElementById("clientName").textContent = res.clientName + " 고객님 추천 매물";
+    document.getElementById("clientDate").textContent = new Date().toLocaleDateString("ko-KR");
+    document.getElementById("clientBanner").style.display = "flex";
+  }
+
+  // 지도 버튼
+  if(res.mapUrl){
+    document.getElementById("mapLink").href = res.mapUrl;
+    document.getElementById("mapBar").style.display = "block";
+  }
+
+  // 중개사면 버튼 숨김, 고객이면 표시
+  if(!res.isAgent){
+    document.querySelector(".contact-bar").style.display = "flex";
+  }
+
+  render(res.items || []);
 }
 
 boot();
