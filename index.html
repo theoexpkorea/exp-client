@@ -40,7 +40,8 @@
 
   /* Header */
   header{
-    background:var(--surface);
+    position:sticky; top:0; z-index:30; background:var(--surface);
+    border-bottom:1px solid var(--line);
     padding:calc(env(safe-area-inset-top) + 12px) 16px 12px;
   }
   .head-row{display:flex; align-items:center; justify-content:space-between; gap:10px}
@@ -67,7 +68,6 @@
   .map-bar{
     padding:10px 16px; background:var(--surface);
     border-bottom:1px solid var(--line);
-    position:sticky; top:0; z-index:30;
   }
   .map-btn{
     display:flex; align-items:center; justify-content:center; gap:8px;
@@ -256,23 +256,23 @@
     </div>
     <div class="count"><b id="cnt">0</b>건</div>
   </div>
+
+  <!-- 고객명 배너 -->
+  <div class="client-banner" id="clientBanner" style="display:none">
+    <span class="cl-name" id="clientName"></span>
+    <span class="cl-date" id="clientDate"></span>
+  </div>
+
+  <!-- 지도 버튼 -->
+  <div class="map-bar" id="mapBar" style="display:none">
+    <a class="map-btn" id="mapLink" href="#" target="_blank">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+      </svg>
+      추천 매물 지도 보기
+    </a>
+  </div>
 </header>
-
-<!-- 고객명 배너 -->
-<div class="client-banner" id="clientBanner" style="display:none">
-  <span class="cl-name" id="clientName"></span>
-  <span class="cl-date" id="clientDate"></span>
-</div>
-
-<!-- 지도 버튼 -->
-<div class="map-bar" id="mapBar" style="display:none">
-  <a class="map-btn" id="mapLink" href="#" target="_blank">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-    </svg>
-    추천 매물 지도 보기
-  </a>
-</div>
 
 <main id="list">
   <div class="loading">
