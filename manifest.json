@@ -3,10 +3,9 @@
   "short_name": "추천매물",
   "start_url": "./index.html",
   "scope": "./",
-  "display": "fullscreen",
-  "display_override": ["fullscreen", "standalone"],
+  "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#FFFFFF",
+  "theme_color": "#15181E",
   "icons": [
     {
       "src": "icon-192.png",
