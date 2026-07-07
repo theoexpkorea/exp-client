@@ -1,6 +1,6 @@
 {
   "name": "Recommend",
-  "short_name": "Recommend",
+  "short_name": "추천매물",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
