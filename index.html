@@ -346,11 +346,14 @@ if(!clientId){
   const copyMsg   = document.getElementById("copyMsg");
 
   function getCode(){
-    const code = lockInput.value.trim().toUpperCase();
-    if(!code){
+    let raw = lockInput.value.trim().toUpperCase();
+    if(!raw){
       lockErr.textContent = "코드를 입력해 주세요";
       return null;
     }
+    // 알파벳+숫자만 입력해도 자동으로 하이픈 삽입 (예: CU0001 → CU-0001)
+    const m = raw.match(/^([A-Z]+)-?(\d+)$/);
+    const code = m ? (m[1] + "-" + m[2]) : raw;
     lockErr.textContent = "";
     return code;
   }
