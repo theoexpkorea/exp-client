@@ -1,10 +1,10 @@
 {
   "name": "theo 추천매물 · eXp Korea",
-  "short_name": "theo",
+  "short_name": "추천매물",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#F4F5F7",
+  "background_color": "#FFFFFF",
   "theme_color": "#2746E6",
   "icons": [
     {
