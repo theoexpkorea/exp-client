@@ -356,16 +356,13 @@ if(!clientId){
   const copyMsg   = document.getElementById("copyMsg");
 
   function getCode(){
-    let raw = lockInput.value.trim().toUpperCase();
+    const raw = lockInput.value.trim().toUpperCase();
     if(!raw){
       lockErr.textContent = "코드를 입력해 주세요";
       return null;
     }
-    // 알파벳+숫자만 입력해도 자동으로 하이픈 삽입 (예: CU0001 → CU-0001)
-    const m = raw.match(/^([A-Z]+)-?(\d+)$/);
-    const code = m ? (m[1] + "-" + m[2]) : raw;
     lockErr.textContent = "";
-    return code;
+    return raw;
   }
   function buildUrl(code){
     return location.origin + location.pathname + "?id=" + encodeURIComponent(code);
@@ -401,11 +398,11 @@ if(!clientId){
   copyBtn.addEventListener("click", copyKakaoLink);
   lockInput.addEventListener("keydown", e=>{ if(e.key==="Enter") goToCode(); });
 
-  // 입력하는 즉시 "CU0001" → "CU-0001" 형태로 실시간 변환
+  // 영문만 자동으로 대문자 변환 (한글/하이픈/숫자 등은 입력한 그대로 자유형식 유지)
   lockInput.addEventListener("input", ()=>{
-    let v = lockInput.value.toUpperCase().replace(/-/g, "");
-    const m = v.match(/^([A-Z]+)(\d*)$/);
-    lockInput.value = (m && m[2]) ? (m[1] + "-" + m[2]) : v;
+    const pos = lockInput.selectionStart;
+    lockInput.value = lockInput.value.toUpperCase();
+    lockInput.setSelectionRange(pos, pos);
   });
 }
 
