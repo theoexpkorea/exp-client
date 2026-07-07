@@ -256,14 +256,14 @@
   html.mode-code header, html.mode-code main, html.mode-code .contact-bar{display:none !important}
 </style>
 
-<!-- 고객코드 입력 화면 (URL에 id 파라미터 없을 때 표시) -->
+<!-- 접속코드 입력 화면 (URL에 id 파라미터 없을 때 표시) -->
 <div id="lockScreen" style="display:none">
   <div class="lock-logo">the<span class="o">o</span></div>
   <div class="lock-sub">추천매물 · eXp Korea</div>
   <div class="lock-box">
-    <div class="lock-title">🔑 고객 코드를 입력하세요</div>
+    <div class="lock-title">🔑 접속 코드를 입력하세요</div>
     <input id="lockInput" class="lock-input" type="text"
-      inputmode="text" maxlength="20" placeholder="예: CU-0001"
+      inputmode="text" maxlength="20" placeholder="예: NR-외과"
       autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"
       style="letter-spacing:2px; text-transform:uppercase;">
     <button class="lock-btn" id="lockBtn">이동</button>
@@ -342,11 +342,11 @@ const CONFIG = {
 };
 
 /* ===================== 초기화 ===================== */
-// URL에서 고객코드 읽기
+// URL에서 접속코드 읽기
 const params   = new URLSearchParams(location.search);
 const clientId = params.get("id") || "";
 
-// id 파라미터가 없으면 고객코드 입력 화면 표시
+// id 파라미터가 없으면 접속코드 입력 화면 표시
 if(!clientId){
   document.getElementById("lockScreen").style.display = "flex";
   const lockInput = document.getElementById("lockInput");
