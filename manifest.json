@@ -1,6 +1,6 @@
 {
-  "name": "theo 추천매물 · eXp Korea",
-  "short_name": "추천매물",
+  "name": "Recommend",
+  "short_name": "Recommend",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
