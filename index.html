@@ -14,7 +14,7 @@
 <meta property="og:url" content="https://theoexpkorea.github.io/exp-client/">
 <meta property="og:type" content="website">
 
-<link rel="manifest" href="../manifest.json">
+<link rel="manifest" href="./manifest.json">
 <link rel="apple-touch-icon" href="./icon-192.png">
 <link rel="icon" type="image/png" href="./icon-192.png">
 <title>추천 매물</title>
@@ -226,6 +226,17 @@
     font-family:inherit;
   }
   #lockScreen .lock-btn:active{opacity:.85}
+  #lockScreen .lock-btn2{
+    width:100%; height:46px; border:1.5px solid var(--accent); border-radius:12px;
+    background:var(--accent-soft); color:var(--accent);
+    font-size:14px; font-weight:800; cursor:pointer;
+    font-family:inherit; margin-top:10px;
+  }
+  #lockScreen .lock-btn2:active{opacity:.8}
+  #lockScreen .lock-copy-msg{
+    font-size:12.5px; font-weight:700; color:var(--accent);
+    text-align:center; margin-top:8px; min-height:18px;
+  }
   #lockScreen .lock-err{
     font-size:13px; font-weight:700; color:#E03A3A;
     text-align:center; margin-top:10px; min-height:20px;
@@ -234,16 +245,19 @@
 </head>
 <body>
 
-<!-- 비밀번호 화면 (고객용은 기본 숨김 — id 파라미터로 접근) -->
+<!-- 고객코드 입력 화면 (URL에 id 파라미터 없을 때 표시) -->
 <div id="lockScreen" style="display:none">
   <div class="lock-logo">the<span class="o">o</span></div>
-  <div class="lock-sub">추천 매물 서비스</div>
+  <div class="lock-sub">추천매물 · eXp Korea</div>
   <div class="lock-box">
-    <div class="lock-title">🔒 접근 코드를 입력하세요</div>
-    <input id="lockInput" class="lock-input" type="password"
-      inputmode="numeric" maxlength="8" placeholder="••••"
-      autocomplete="off">
-    <button class="lock-btn" id="lockBtn">확인</button>
+    <div class="lock-title">🔑 고객 코드를 입력하세요</div>
+    <input id="lockInput" class="lock-input" type="text"
+      inputmode="text" maxlength="20" placeholder="예: CU-0001"
+      autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false"
+      style="letter-spacing:2px; text-transform:uppercase;">
+    <button class="lock-btn" id="lockBtn">이동</button>
+    <button class="lock-btn2" id="copyBtn">💬 카톡전송 주소 복사</button>
+    <div class="lock-copy-msg" id="copyMsg"></div>
     <div class="lock-err" id="lockErr"></div>
   </div>
 </div>
@@ -320,6 +334,59 @@ const CONFIG = {
 // URL에서 고객코드 읽기
 const params   = new URLSearchParams(location.search);
 const clientId = params.get("id") || "";
+
+// id 파라미터가 없으면 고객코드 입력 화면 표시
+if(!clientId){
+  document.getElementById("lockScreen").style.display = "flex";
+  const lockInput = document.getElementById("lockInput");
+  const lockBtn   = document.getElementById("lockBtn");
+  const lockErr   = document.getElementById("lockErr");
+  const copyBtn   = document.getElementById("copyBtn");
+  const copyMsg   = document.getElementById("copyMsg");
+
+  function getCode(){
+    const code = lockInput.value.trim().toUpperCase();
+    if(!code){
+      lockErr.textContent = "코드를 입력해 주세요";
+      return null;
+    }
+    lockErr.textContent = "";
+    return code;
+  }
+  function buildUrl(code){
+    return location.origin + location.pathname + "?id=" + encodeURIComponent(code);
+  }
+  function goToCode(){
+    const code = getCode();
+    if(!code) return;
+    location.href = buildUrl(code);
+  }
+  function copyKakaoLink(){
+    const code = getCode();
+    if(!code) return;
+    const url = buildUrl(code);
+    const text = "[eXp Korea] theo 추천 매물을 확인해 보세요 👇\n" + url;
+
+    function done(ok){
+      copyMsg.textContent = ok ? "✅ 복사 완료! 카톡에 붙여넣기 하세요" : "복사에 실패했어요, 직접 선택해 복사해 주세요";
+    }
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).then(()=>done(true)).catch(()=>done(false));
+    } else {
+      const ta = document.createElement("textarea");
+      ta.value = text; ta.style.position="fixed"; ta.style.opacity="0";
+      document.body.appendChild(ta); ta.focus(); ta.select();
+      let ok=false;
+      try{ ok = document.execCommand("copy"); }catch(e){}
+      document.body.removeChild(ta);
+      done(ok);
+    }
+  }
+
+  lockBtn.addEventListener("click", goToCode);
+  copyBtn.addEventListener("click", copyKakaoLink);
+  lockInput.addEventListener("keydown", e=>{ if(e.key==="Enter") goToCode(); });
+}
 
 // 연락 버튼 설정
 document.getElementById("telBtn").href   = "tel:" + CONFIG.TEL;
@@ -526,7 +593,7 @@ function applyResult(res){
 }
 
 syncHeaderSpacer();
-boot();
+if(clientId) boot();
 </script>
 </body>
 </html>

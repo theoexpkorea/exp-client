@@ -1,25 +1,29 @@
 {
-  "name": "theo 추천매물",
+  "name": "theo 추천매물 · eXp Korea",
   "short_name": "theo",
-  "description": "theo eXp Korea 추천 매물 서비스",
-  "start_url": "/exp-client/",
-  "scope": "/exp-client/",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "orientation": "portrait",
-  "background_color": "#161A20",
+  "background_color": "#F4F5F7",
   "theme_color": "#2746E6",
   "icons": [
     {
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any maskable"
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
