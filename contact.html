@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no">
-<meta name="theme-color" content="#2746E6">
+<meta name="theme-color" content="#FFFFFF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
@@ -439,32 +439,22 @@ async function submitForm(){
     date: new Date().toLocaleDateString('ko-KR')
   };
 
-  function submitOnce(timeoutMs){
-    return new Promise((resolve, reject) => {
-      const cb = '__contact_cb_' + Date.now() + '_' + Math.floor(Math.random()*100000);
+  try {
+    const cb = '__contact_cb_' + Date.now();
+    await new Promise((resolve, reject) => {
       const s = document.createElement('script');
       window[cb] = (res) => { delete window[cb]; s.remove(); resolve(res); };
-      s.onerror = () => { delete window[cb]; s.remove(); reject(new Error('load fail')); };
+      s.onerror = () => { delete window[cb]; s.remove(); reject(); };
       const params = new URLSearchParams({callback: cb, ...data});
       s.src = SCRIPT_URL + '?' + params.toString();
       document.head.appendChild(s);
-      setTimeout(() => reject(new Error('timeout')), timeoutMs);
+      setTimeout(() => reject(), 10000);
     });
-  }
-
-  try {
-    try{
-      await submitOnce(20000);
-    }catch(e){
-      btn.textContent = '재시도 중...';
-      await new Promise(r => setTimeout(r, 800));
-      await submitOnce(20000);
-    }
     document.getElementById('formWrap').style.display = 'none';
     document.getElementById('doneScreen').style.display = 'block';
   } catch(e) {
     btn.disabled = false; btn.textContent = '상담 신청하기';
-    alert('연결이 원활하지 않습니다. 잠시 후 다시 시도해주세요.');
+    alert('오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
   }
 }
 </script>
