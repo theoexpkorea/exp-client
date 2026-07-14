@@ -478,6 +478,7 @@ function typeStyle(t){
 
 /* ===================== 렌더 ===================== */
 let currentItems=[];
+let HIDE_TRADE=false;
 function render(items){
   const list=document.getElementById("list");
   document.getElementById("cnt").textContent=items.length;
@@ -501,13 +502,13 @@ function render(items){
         <div class="m"><div class="k">실측면적</div><div class="v tnum">${fnum(d.pyeong,1)}평</div></div>
         <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
       </div>
-      ${(d.bdoc||d.rdoc||d.note||d.trade||d.addr||d.bldg) ? `<div class="doc-btns">
+      ${(d.bdoc||d.rdoc||d.note||(!HIDE_TRADE&&(d.trade||d.addr||d.bldg))) ? `<div class="doc-btns">
         ${(d.bdoc || d.rdoc || d.note) ? `<div class="doc-btns-row">
           ${d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : ''}
           ${d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : ''}
           ${d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''}
         </div>` : ''}
-        ${(d.trade || d.addr || d.bldg) ? `<div class="doc-btns-row">
+        ${(!HIDE_TRADE && (d.trade || d.addr || d.bldg)) ? `<div class="doc-btns-row">
           ${d.trade ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : ''}
           ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : ''}
         </div>` : ''}
@@ -652,6 +653,7 @@ window.addEventListener("resize", syncHeaderSpacer);
 window.addEventListener("orientationchange", ()=>setTimeout(syncHeaderSpacer, 200));
 
 function applyResult(res){
+  HIDE_TRADE = !!res.hideTrade;
   // 고객명 배너
   if(res.clientName){
     document.getElementById("clientName").textContent = res.clientName + " 고객님";
