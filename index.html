@@ -121,6 +121,21 @@
   }
   .doc-btn:active{opacity:.75}
 
+  /* 상권정보 요약 줄 + 팝업 막대그래프 */
+  .trade-row{
+    display:flex; align-items:center; justify-content:space-between; gap:8px;
+    margin:0 0 10px; padding:9px 12px; border-radius:10px;
+    background:var(--bg); border:1px solid var(--line); cursor:pointer; clear:both;
+  }
+  .trade-row .tr-txt{font-size:12px; color:var(--muted); font-weight:600}
+  .trade-row .tr-txt b{color:var(--ink); font-weight:800}
+  .trade-row svg{flex:none; color:#aab0ba}
+  .trade-bar-row{display:flex; align-items:center; gap:10px; padding:6px 0}
+  .trade-bar-name{font-size:13px; width:72px; flex:none; color:var(--ink)}
+  .trade-bar-track{flex:1; height:8px; background:var(--bg); border-radius:4px; overflow:hidden}
+  .trade-bar-fill{height:100%; background:var(--accent)}
+  .trade-bar-count{font-size:13px; width:24px; text-align:right; color:var(--muted)}
+
   /* 중개사 추천 멘트 팝업 */
   .note-overlay{
     position:fixed; inset:0; z-index:200; background:rgba(15,18,24,.45);
@@ -327,6 +342,16 @@
   </div>
 </div>
 
+<!-- 상권정보 팝업 -->
+<div class="note-overlay" id="tradeOverlay" onclick="if(event.target===this)closeTrade()">
+  <div class="note-sheet">
+    <div class="note-handle"></div>
+    <div class="note-head">🏪 상권정보</div>
+    <div id="tradeSub" style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-4px 0 12px"></div>
+    <div id="tradeBars"></div>
+  </div>
+</div>
+
 <script>
 /* ===================== 설정 ===================== */
 const CONFIG = {
@@ -422,6 +447,26 @@ function fnum(v,dec){
   if(v==null||v==="-"||v===""||isNaN(+v)) return v;
   return (+(+v).toFixed(dec)).toLocaleString();
 }
+function showSgToast(msg){
+  let el = document.getElementById('sgToast');
+  if(!el){
+    el = document.createElement('div');
+    el.id = 'sgToast';
+    el.style.cssText = 'position:fixed;left:50%;bottom:84px;transform:translateX(-50%);background:#15181E;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:88vw;text-align:center;opacity:0;transition:opacity .2s;';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  el.style.opacity = '1';
+  clearTimeout(el._t);
+  el._t = setTimeout(()=>{ el.style.opacity = '0'; }, 2600);
+}
+function copyAddressForSg(addr){
+  if(!addr) return;
+  try{
+    navigator.clipboard.writeText(addr).catch(()=>{});
+  }catch(e){}
+  showSgToast('주소 복사됨 · 상권정보시스템 검색창에 붙여넣기(꾹 누르기)만 하면 돼요');
+}
 function extrasLine(d){
   const bits=[];
   const isNA=v=>(v==null||v===""||v==="-");
@@ -473,9 +518,14 @@ function render(items){
         <div class="m"><div class="k">실측면적</div><div class="v tnum">${fnum(d.pyeong,1)}평</div></div>
         <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
       </div>
-      ${(d.bdoc||d.rdoc||d.note) ? `<div class="doc-btns">
+      ${d.trade ? `<div class="trade-row" onclick="openTrade(${idx})">
+        <span class="tr-txt">반경 ${d.trade.radius}m · 총 <b>${d.trade.total}개</b> 점포${d.trade.top.map(t=>` · ${t.name} ${t.count}`).join('')}</span>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>
+      </div>` : ''}
+      ${(d.bdoc||d.rdoc||d.note||d.addr||d.bldg) ? `<div class="doc-btns">
         ${d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : ''}
         ${d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : ''}
+        ${(!d.trade && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://sg.sbiz.or.kr/godo/index.sg" target="_blank" onclick="copyAddressForSg('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏪 상권정보</a>` : ''}
         ${d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''}
       </div>` : ''}
     </div>`).join("");
@@ -490,6 +540,24 @@ function openNote(idx){
 }
 function closeNote(){
   document.getElementById("noteOverlay").classList.remove("show");
+}
+
+/* ===================== 상권정보 팝업 ===================== */
+function openTrade(idx){
+  const d=currentItems[idx];
+  if(!d||!d.trade) return;
+  document.getElementById("tradeSub").textContent = `반경 ${d.trade.radius}m · 총 ${d.trade.total}개 점포`;
+  const max = Math.max(...d.trade.full.map(t=>t.count), 1);
+  document.getElementById("tradeBars").innerHTML = d.trade.full.map(t => `
+    <div class="trade-bar-row">
+      <span class="trade-bar-name">${t.name}</span>
+      <div class="trade-bar-track"><div class="trade-bar-fill" style="width:${Math.round(t.count/max*100)}%"></div></div>
+      <span class="trade-bar-count">${t.count}</span>
+    </div>`).join("");
+  document.getElementById("tradeOverlay").classList.add("show");
+}
+function closeTrade(){
+  document.getElementById("tradeOverlay").classList.remove("show");
 }
 
 /* ===================== 데이터 로드 (JSONP + 재시도) ===================== */
