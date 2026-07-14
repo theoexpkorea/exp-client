@@ -346,7 +346,7 @@
     <div class="note-head" style="justify-content:space-between">
       <span style="display:flex;align-items:center;gap:7px">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
-        상권정보
+        상권점포수
       </span>
     </div>
     <div id="tradeSub" style="font-size:13px;color:var(--ink);font-weight:800;margin:-2px 0 8px"></div>
@@ -522,14 +522,14 @@ function render(items){
         <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
       </div>
       ${(d.bdoc||d.rdoc||d.note||d.trade||d.addr||d.bldg) ? `<div class="doc-btns">
-        ${(d.trade || d.addr || d.bldg) ? `<div class="doc-btns-row">
-          ${d.trade ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권정보</button>` : ''}
-          ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank" onclick="copyAddressForSg('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">📊 소상공인365</a>` : ''}
-        </div>` : ''}
         ${(d.bdoc || d.rdoc || d.note) ? `<div class="doc-btns-row">
           ${d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : ''}
           ${d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : ''}
           ${d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''}
+        </div>` : ''}
+        ${(d.trade || d.addr || d.bldg) ? `<div class="doc-btns-row">
+          ${d.trade ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : ''}
+          ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank" onclick="copyAddressForSg('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">📊 소상공인365</a>` : ''}
         </div>` : ''}
       </div>` : ''}
     </div>`).join("");
