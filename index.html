@@ -130,11 +130,12 @@
   .trade-row .tr-txt{font-size:12px; color:var(--muted); font-weight:600}
   .trade-row .tr-txt b{color:var(--ink); font-weight:800}
   .trade-row svg{flex:none; color:#aab0ba}
-  .trade-bar-row{display:flex; align-items:center; gap:10px; padding:6px 0}
-  .trade-bar-name{font-size:13px; width:72px; flex:none; color:var(--ink)}
-  .trade-bar-track{flex:1; height:8px; background:var(--bg); border-radius:4px; overflow:hidden}
-  .trade-bar-fill{height:100%; background:var(--accent)}
-  .trade-bar-count{font-size:13px; width:24px; text-align:right; color:var(--muted)}
+  .trade-bar-row{display:flex; align-items:center; gap:10px; padding:7px 2px}
+  .trade-bar-name{font-size:12.5px; width:88px; flex:none; color:var(--ink); font-weight:700;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+  .trade-bar-track{flex:1; height:7px; background:var(--line-2); border-radius:4px; overflow:hidden}
+  .trade-bar-fill{height:100%; background:var(--accent); border-radius:4px}
+  .trade-bar-count{font-size:12.5px; font-weight:800; width:28px; text-align:right; color:var(--ink)}
 
   /* 중개사 추천 멘트 팝업 */
   .note-overlay{
@@ -348,7 +349,7 @@
     <div class="note-handle"></div>
     <div class="note-head">🏪 상권정보</div>
     <div id="tradeSub" style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-4px 0 12px"></div>
-    <div id="tradeBars"></div>
+    <div id="tradeBars" style="max-height:min(50vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
   </div>
 </div>
 
@@ -547,11 +548,18 @@ function openTrade(idx){
   const d=currentItems[idx];
   if(!d||!d.trade) return;
   document.getElementById("tradeSub").textContent = `반경 ${d.trade.radius}m · 총 ${d.trade.total}개 점포`;
-  const max = Math.max(...d.trade.full.map(t=>t.count), 1);
-  document.getElementById("tradeBars").innerHTML = d.trade.full.map(t => `
+
+  const TOP_N = 10;
+  const sorted = [...d.trade.full].sort((a,b)=>b.count-a.count);
+  const shown = sorted.slice(0, TOP_N);
+  const restCount = sorted.slice(TOP_N).reduce((s,t)=>s+t.count, 0);
+  if(restCount > 0) shown.push({ name: "기타", count: restCount });
+
+  const max = Math.max(...shown.map(t=>t.count), 1);
+  document.getElementById("tradeBars").innerHTML = shown.map(t => `
     <div class="trade-bar-row">
       <span class="trade-bar-name">${t.name}</span>
-      <div class="trade-bar-track"><div class="trade-bar-fill" style="width:${Math.round(t.count/max*100)}%"></div></div>
+      <div class="trade-bar-track"><div class="trade-bar-fill" style="width:${Math.max(Math.round(t.count/max*100),4)}%"></div></div>
       <span class="trade-bar-count">${t.count}</span>
     </div>`).join("");
   document.getElementById("tradeOverlay").classList.add("show");
