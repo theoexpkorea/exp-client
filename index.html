@@ -352,6 +352,7 @@
     <div class="note-head">🏪 상권정보</div>
     <div id="tradeSub" style="font-size:12.5px;color:var(--muted);font-weight:600;margin:-4px 0 12px"></div>
     <div id="tradeBars" style="max-height:min(50vh,340px);overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
+    <div id="tradeNaverLink" style="margin-top:12px; padding-top:12px; border-top:1px solid var(--line-2)"></div>
   </div>
 </div>
 
@@ -468,7 +469,7 @@ function copyAddressForSg(addr){
   try{
     navigator.clipboard.writeText(addr).catch(()=>{});
   }catch(e){}
-  showSgToast('주소 복사됨 · 상권정보시스템 검색창에 붙여넣기(꾹 누르기)만 하면 돼요');
+  showSgToast('주소 복사됨 · 소상공인365 검색창에 붙여넣기(꾹 누르기)만 하면 돼요');
 }
 function extrasLine(d){
   const bits=[];
@@ -569,6 +570,19 @@ function openTrade(idx){
       <div class="trade-bar-track"><div class="trade-bar-fill" style="width:${Math.max(Math.round(t.count/max*100),4)}%"></div></div>
       <span class="trade-bar-count">${t.count.toLocaleString()}</span>
     </div>`).join("");
+  const naverBox = document.getElementById("tradeNaverLink");
+  if(d.naver && String(d.naver).trim() && String(d.naver).trim() !== "-"){
+    const nUrl = `https://m.land.naver.com/article/info/${encodeURIComponent(d.naver)}`;
+    naverBox.innerHTML = `<a href="${nUrl}" target="_blank" style="display:flex; align-items:center; justify-content:space-between; font-size:12.5px; font-weight:700; color:var(--accent); text-decoration:none">
+      네이버부동산에서 유동인구 더보기
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M7 17 17 7M8 7h9v9"/></svg>
+    </a>`;
+    naverBox.style.display = "block";
+  } else {
+    naverBox.innerHTML = "";
+    naverBox.style.display = "none";
+  }
+
   document.getElementById("tradeOverlay").classList.add("show");
 }
 function closeTrade(){
