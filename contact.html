@@ -189,7 +189,7 @@
 
     <div class="form-group">
       <label class="form-label">이름<span class="req">*</span></label>
-      <input class="form-input" id="name" type="text" placeholder="이름을 입력해주세요">
+      <input class="form-input" id="name" type="text" placeholder="이름을 입력해주세요.">
       <div class="field-err" id="err-name">이름을 입력해주세요.</div>
     </div>
 
@@ -213,13 +213,13 @@
         <label class="form-label">매물 유형<span class="req">*</span></label>
         <div class="custom-select" id="cs-buy-type">
           <div class="cs-trigger placeholder" onclick="toggleDropdown('cs-buy-type')">
-            <span class="cs-label">선택해주세요</span>
+            <span class="cs-label">선택해주세요.</span>
             <svg class="cs-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
               <path d="M1 1l5 5 5-5" stroke="#727A86" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           </div>
           <div class="cs-dropdown">
-            <div class="cs-option placeholder-opt" onclick="selectOption('cs-buy-type','')">선택해주세요</div>
+            <div class="cs-option placeholder-opt" onclick="selectOption('cs-buy-type','')">선택해주세요.</div>
             <div class="cs-option" onclick="selectOption('cs-buy-type','상가')">상가</div>
             <div class="cs-option" onclick="selectOption('cs-buy-type','사무실')">사무실</div>
             <div class="cs-option" onclick="selectOption('cs-buy-type','지식산업센터')">지식산업센터</div>
@@ -251,7 +251,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">요청사항</label>
-        <textarea class="form-textarea" id="buy-memo" placeholder="추가로 원하시는 조건이나 문의사항을 입력해주세요"></textarea>
+        <textarea class="form-textarea" id="buy-memo" placeholder="추가로 원하시는 조건이나 문의사항을 입력해주세요."></textarea>
       </div>
     </div>
 
@@ -261,13 +261,13 @@
         <label class="form-label">매물 유형<span class="req">*</span></label>
         <div class="custom-select" id="cs-sell-type">
           <div class="cs-trigger placeholder" onclick="toggleDropdown('cs-sell-type')">
-            <span class="cs-label">선택해주세요</span>
+            <span class="cs-label">선택해주세요.</span>
             <svg class="cs-arrow" width="12" height="8" viewBox="0 0 12 8" fill="none">
               <path d="M1 1l5 5 5-5" stroke="#727A86" stroke-width="1.5" stroke-linecap="round"/>
             </svg>
           </div>
           <div class="cs-dropdown">
-            <div class="cs-option placeholder-opt" onclick="selectOption('cs-sell-type','')">선택해주세요</div>
+            <div class="cs-option placeholder-opt" onclick="selectOption('cs-sell-type','')">선택해주세요.</div>
             <div class="cs-option" onclick="selectOption('cs-sell-type','상가')">상가</div>
             <div class="cs-option" onclick="selectOption('cs-sell-type','사무실')">사무실</div>
             <div class="cs-option" onclick="selectOption('cs-sell-type','지식산업센터')">지식산업센터</div>
@@ -299,7 +299,7 @@
       </div>
       <div class="form-group">
         <label class="form-label">요청사항</label>
-        <textarea class="form-textarea" id="sell-memo" placeholder="추가로 원하시는 조건이나 문의사항을 입력해주세요"></textarea>
+        <textarea class="form-textarea" id="sell-memo" placeholder="추가로 원하시는 조건이나 문의사항을 입력해주세요."></textarea>
       </div>
     </div>
 
@@ -363,7 +363,7 @@ function selectOption(id, value){
   const trigger = wrap.querySelector('.cs-trigger');
   const label = wrap.querySelector('.cs-label');
   csValues[id] = value;
-  if(value === ''){ label.textContent = '선택해주세요'; trigger.classList.add('placeholder'); }
+  if(value === ''){ label.textContent = '선택해주세요.'; trigger.classList.add('placeholder'); }
   else { label.textContent = value; trigger.classList.remove('placeholder'); }
   wrap.querySelectorAll('.cs-option').forEach(opt => {
     opt.classList.toggle('selected', opt.textContent === value && value !== '');
