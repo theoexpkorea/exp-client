@@ -450,12 +450,6 @@ function fnum(v,dec){
   if(v==null||v==="-"||v===""||isNaN(+v)) return v;
   return (+(+v).toFixed(dec)).toLocaleString();
 }
-function copyAddressForSg(addr){
-  if(!addr) return;
-  try{
-    navigator.clipboard.writeText(addr).catch(()=>{});
-  }catch(e){}
-}
 function extrasLine(d){
   const bits=[];
   const isNA=v=>(v==null||v===""||v==="-");
@@ -515,7 +509,7 @@ function render(items){
         </div>` : ''}
         ${(d.trade || d.addr || d.bldg) ? `<div class="doc-btns-row">
           ${d.trade ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : ''}
-          ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank" onclick="copyAddressForSg('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">📊 소상공인365</a>` : ''}
+          ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : ''}
         </div>` : ''}
       </div>` : ''}
     </div>`).join("");
