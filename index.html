@@ -124,11 +124,13 @@
   /* 상권정보 요약 줄 + 팝업 막대그래프 */
   .trade-row{
     display:flex; align-items:center; justify-content:space-between; gap:8px;
-    margin:0 0 10px; padding:9px 12px; border-radius:10px;
+    margin:14px 0 12px; padding:11px 13px; border-radius:10px;
     background:var(--bg); border:1px solid var(--line); cursor:pointer; clear:both;
   }
-  .trade-row .tr-txt{font-size:12px; color:var(--muted); font-weight:600}
-  .trade-row .tr-txt b{color:var(--ink); font-weight:800}
+  .trade-row .tr-left{display:flex; align-items:center; gap:7px}
+  .trade-row .tr-label{font-size:12.5px; color:var(--ink); font-weight:800}
+  .trade-row .tr-total{font-size:12px; color:var(--muted); font-weight:700}
+  .trade-row .tr-total b{color:var(--accent); font-weight:800}
   .trade-row svg{flex:none; color:#aab0ba}
   .trade-bar-row{display:flex; align-items:center; gap:10px; padding:7px 2px}
   .trade-bar-name{font-size:12.5px; width:88px; flex:none; color:var(--ink); font-weight:700;
@@ -520,7 +522,11 @@ function render(items){
         <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
       </div>
       ${d.trade ? `<div class="trade-row" onclick="openTrade(${idx})">
-        <span class="tr-txt">반경 ${d.trade.radius}m · 총 <b>${d.trade.total}개</b> 점포${d.trade.top.map(t=>` · ${t.name} ${t.count}`).join('')}</span>
+        <span class="tr-left">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
+          <span class="tr-label">상권정보</span>
+        </span>
+        <span class="tr-total">총 <b>${d.trade.total.toLocaleString()}개</b> 점포</span>
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="m9 6 6 6-6 6"/></svg>
       </div>` : ''}
       ${(d.bdoc||d.rdoc||d.note||d.addr||d.bldg) ? `<div class="doc-btns">
@@ -547,7 +553,8 @@ function closeNote(){
 function openTrade(idx){
   const d=currentItems[idx];
   if(!d||!d.trade) return;
-  document.getElementById("tradeSub").textContent = `반경 ${d.trade.radius}m · 총 ${d.trade.total}개 점포`;
+  const topTxt = d.trade.top.map(t=>`${t.name} ${t.count}`).join(' · ');
+  document.getElementById("tradeSub").textContent = `반경 ${d.trade.radius}m · 총 ${d.trade.total.toLocaleString()}개 점포 · ${topTxt}`;
 
   const TOP_N = 10;
   const sorted = [...d.trade.full].sort((a,b)=>b.count-a.count);
@@ -560,7 +567,7 @@ function openTrade(idx){
     <div class="trade-bar-row">
       <span class="trade-bar-name">${t.name}</span>
       <div class="trade-bar-track"><div class="trade-bar-fill" style="width:${Math.max(Math.round(t.count/max*100),4)}%"></div></div>
-      <span class="trade-bar-count">${t.count}</span>
+      <span class="trade-bar-count">${t.count.toLocaleString()}</span>
     </div>`).join("");
   document.getElementById("tradeOverlay").classList.add("show");
 }
