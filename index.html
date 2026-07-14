@@ -352,7 +352,7 @@ if(!clientId){
   function getCode(){
     const raw = lockInput.value.trim().toUpperCase();
     if(!raw){
-      lockErr.textContent = "코드를 입력해 주세요";
+      lockErr.textContent = "코드를 입력해 주세요.";
       return null;
     }
     lockErr.textContent = "";
@@ -373,7 +373,7 @@ if(!clientId){
     const text = url;
 
     function done(ok){
-      copyMsg.textContent = ok ? "✅ 복사 완료! 카톡에 붙여넣기 하세요" : "복사에 실패했어요, 직접 선택해 복사해 주세요";
+      copyMsg.textContent = ok ? "✅ 복사 완료! 카톡에 붙여넣기 하세요." : "복사에 실패했어요. 직접 선택해 복사해 주세요.";
     }
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).then(()=>done(true)).catch(()=>done(false));
@@ -455,7 +455,7 @@ function render(items){
   document.getElementById("cnt").textContent=items.length;
   currentItems=items;
   if(!items.length){
-    list.innerHTML=`<div class="empty"><div class="em-t">추천 매물이 없습니다</div><div class="em-s">담당자에게 문의해 주세요</div></div>`;
+    list.innerHTML=`<div class="empty"><div class="em-t">추천 매물이 없습니다.</div><div class="em-s">담당자에게 문의해 주세요.</div></div>`;
     return;
   }
   list.innerHTML=items.map((d,idx)=>`
@@ -522,8 +522,8 @@ async function loadData(url){
 function showLoadError(){
   document.getElementById("list").innerHTML =
     `<div class="empty">
-      <div class="em-t">연결이 원활하지 않습니다</div>
-      <div class="em-s">네트워크 상태를 확인하고 다시 시도해 주세요</div>
+      <div class="em-t">연결이 원활하지 않습니다.</div>
+      <div class="em-s">네트워크 상태를 확인하고 다시 시도해 주세요.</div>
       <button class="retry-btn" onclick="boot()">다시 시도</button>
     </div>`;
 }
@@ -532,7 +532,7 @@ function showLoadError(){
 async function boot(){
   if(!clientId){
     document.getElementById("list").innerHTML=
-      `<div class="empty"><div class="em-t">잘못된 접근입니다</div><div class="em-s">담당자에게 링크를 다시 요청해 주세요</div></div>`;
+      `<div class="empty"><div class="em-t">잘못된 접근입니다.</div><div class="em-s">담당자에게 링크를 다시 요청해 주세요.</div></div>`;
     return;
   }
 
@@ -558,6 +558,7 @@ async function boot(){
     const res  = await loadData(url);
 
     if(res.error){
+      // 서버가 에러를 주면 캐시 삭제 (종료된 고객이 캐시로 계속 보는 것 방지)
       try{ localStorage.removeItem(cacheKey); }catch(e){}
 
       if(res.error === "EXPIRED"){
@@ -565,10 +566,10 @@ async function boot(){
         document.getElementById("cnt").textContent = "0";
         document.querySelector(".contact-bar").style.display = "flex";
         document.getElementById("list").innerHTML=
-          `<div class="empty"><div class="em-t">추천이 종료되었습니다</div><div class="em-s">새로운 매물 추천이 필요하시면<br>아래 버튼으로 문의해 주세요</div></div>`;
+          `<div class="empty"><div class="em-t">추천이 종료되었습니다.</div><div class="em-s">새로운 매물 추천이 필요하시면<br>아래 버튼으로 문의해 주세요.</div></div>`;
       } else {
         document.getElementById("list").innerHTML=
-          `<div class="empty"><div class="em-t">매물을 불러올 수 없습니다</div><div class="em-s">담당자에게 링크를 다시 요청해 주세요</div></div>`;
+          `<div class="empty"><div class="em-t">매물을 불러올 수 없습니다.</div><div class="em-s">담당자에게 링크를 다시 요청해 주세요.</div></div>`;
       }
       return;
     }
