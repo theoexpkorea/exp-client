@@ -153,7 +153,11 @@
   .submit-btn:disabled{opacity:.5; cursor:not-allowed}
 
   #doneScreen{display:none; text-align:center; padding:60px 24px}
-  .done-icon{font-size:48px; margin-bottom:16px}
+  .done-icon{
+    width:64px; height:64px; margin:0 auto 20px; border-radius:50%;
+    background:var(--accent-soft); display:flex; align-items:center; justify-content:center;
+  }
+  .done-icon svg{color:var(--accent)}
   .done-title{font-size:20px; font-weight:800; margin:0 0 8px; letter-spacing:-.03em}
   .done-sub{font-size:14px; color:var(--muted); font-weight:500; line-height:1.6; margin:0}
 
@@ -329,7 +333,9 @@
   </div>
 
   <div id="doneScreen">
-    <div class="done-icon">✅</div>
+    <div class="done-icon">
+      <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+    </div>
     <div class="done-title">상담 신청이 완료됐습니다.</div>
     <div class="done-sub">빠른 시일 내에 연락드리겠습니다.<br>감사합니다.</div>
   </div>
