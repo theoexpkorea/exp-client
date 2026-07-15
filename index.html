@@ -41,9 +41,13 @@
 
   /* Header */
   header{
-    position:fixed; top:0; left:0; right:0; z-index:30; background:var(--surface);
-    border-bottom:1px solid var(--line);
+    position:fixed; top:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; z-index:30; background:var(--surface);
+    border-bottom:1px solid var(--line); border-left:1px solid var(--line); border-right:1px solid var(--line);
     padding:calc(env(safe-area-inset-top) + 16px) 16px 16px;
+    box-sizing:border-box;
+  }
+  @media (min-width:481px){
+    body{background:var(--line-2)}
   }
   .head-row{display:flex; align-items:center; justify-content:space-between; gap:10px; min-height:26px; margin-bottom:4px}
   .brand{display:flex; align-items:baseline; gap:8px}
@@ -76,7 +80,10 @@
   .map-chip:active{opacity:.8}
 
   /* list */
-  main{padding:12px 12px calc(env(safe-area-inset-bottom) + 100px)}
+  main{max-width:480px; margin:0 auto; box-sizing:border-box; padding:12px 12px calc(env(safe-area-inset-bottom) + 100px)}
+  @media (min-width:481px){
+    main{background:var(--bg); border-left:1px solid var(--line); border-right:1px solid var(--line); min-height:100vh}
+  }
   .card{
     background:var(--surface); border:1px solid var(--line); border-radius:14px;
     padding:14px 15px; margin:0 4px 11px; box-shadow:var(--shadow);
@@ -161,9 +168,9 @@
 
   /* 하단 고정 연락 버튼 */
   .contact-bar{
-    position:fixed; bottom:0; left:0; right:0; z-index:40;
+    position:fixed; bottom:0; left:50%; transform:translateX(-50%); width:100%; max-width:480px; box-sizing:border-box; z-index:40;
     padding:12px 16px calc(12px + env(safe-area-inset-bottom));
-    background:var(--surface); border-top:1px solid var(--line);
+    background:var(--surface); border-top:1px solid var(--line); border-left:1px solid var(--line); border-right:1px solid var(--line);
     display:none; gap:10px;
   }
   .contact-btn{
