@@ -143,17 +143,23 @@
   /* 중개사 추천 멘트 팝업 */
   .note-overlay{
     position:fixed; inset:0; z-index:200; background:rgba(15,18,24,.45);
-    display:none; align-items:flex-end; justify-content:center;
+    display:none; align-items:center; justify-content:center; padding:20px;
   }
   .note-overlay.show{display:flex}
   .note-sheet{
-    width:100%; max-width:480px; background:var(--surface);
-    border-radius:18px 18px 0 0; padding:18px 20px calc(20px + env(safe-area-inset-bottom));
-    box-sizing:border-box; animation:noteUp .18s ease-out;
+    width:100%; max-width:400px; background:var(--surface);
+    border-radius:18px; padding:20px;
+    box-sizing:border-box; max-height:80vh; overflow-y:auto;
+    animation:noteUp .18s ease-out;
   }
   @keyframes noteUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
-  .note-handle{width:36px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 14px}
-  .note-head{display:flex;align-items:center;gap:7px;margin-bottom:10px;font-size:14.5px;font-weight:800;color:var(--ink)}
+  .note-head{display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:14px; font-size:14.5px; font-weight:800; color:var(--ink)}
+  .note-head-title{display:flex; align-items:center; gap:7px}
+  .note-close{
+    flex:none; width:28px; height:28px; border-radius:50%; background:var(--bg); border:0;
+    display:flex; align-items:center; justify-content:center; color:var(--muted); cursor:pointer; font-size:14px;
+  }
+  .note-close:active{opacity:.7}
   .note-body{
     background:var(--accent-soft); border-radius:12px; padding:14px 15px;
     font-size:14px; line-height:1.65; color:var(--ink); white-space:pre-line;
@@ -338,8 +344,10 @@
 <!-- 중개사 추천 멘트 팝업 -->
 <div class="note-overlay" id="noteOverlay" onclick="if(event.target===this)closeNote()">
   <div class="note-sheet">
-    <div class="note-handle"></div>
-    <div class="note-head">🗨️ 중개사 추천 코멘트</div>
+    <div class="note-head">
+      <span class="note-head-title">🗨️ 중개사 추천 코멘트</span>
+      <button type="button" class="note-close" onclick="closeNote()" aria-label="닫기">✕</button>
+    </div>
     <div class="note-body" id="noteBody"></div>
     <div class="note-agent"><div class="av">T</div><span>theo 중개사 추천</span></div>
   </div>
@@ -348,12 +356,12 @@
 <!-- 상권정보 팝업 -->
 <div class="note-overlay" id="tradeOverlay" onclick="if(event.target===this)closeTrade()">
   <div class="note-sheet">
-    <div class="note-handle"></div>
-    <div class="note-head" style="justify-content:space-between">
-      <span style="display:flex;align-items:center;gap:7px">
+    <div class="note-head">
+      <span class="note-head-title">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 21h18M5 21V9l7-5 7 5v12M9 21v-6h6v6"/></svg>
         상권점포수
       </span>
+      <button type="button" class="note-close" onclick="closeTrade()" aria-label="닫기">✕</button>
     </div>
     <div id="tradeSub" style="font-size:13px;color:var(--ink);font-weight:800;margin:-2px 0 8px"></div>
     <div id="tradeChips" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px"></div>
