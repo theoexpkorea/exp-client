@@ -533,7 +533,7 @@ function render(items){
       ${extrasLine(d)}
       <div class="meta">
         <div class="m"><div class="k">실측면적</div><div class="v tnum">${fnum(d.pyeong,1)}평</div></div>
-        <div class="m"><div class="k">전용 ㎡</div><div class="v tnum">${fnum(d.m2,1)}㎡</div></div>
+        <div class="m"><div class="k">전용 m²</div><div class="v tnum">${fnum(d.m2,1)}m²</div></div>
       </div>
       ${(d.bdoc||d.rdoc||d.note||(!HIDE_TRADE&&(d.trade||d.addr||d.bldg))) ? `<div class="doc-btns">
         ${(d.bdoc || d.rdoc || d.note) ? `<div class="doc-btns-row">
