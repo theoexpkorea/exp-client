@@ -106,7 +106,7 @@
   .price{font-size:18px; font-weight:800; letter-spacing:-.02em; margin-bottom:10px}
   .price .lbl{font-size:12.5px; font-weight:700; color:var(--muted); margin-right:5px}
   .price .sep{color:var(--line); margin:0 7px; font-weight:600}
-  .extras{display:flex; gap:16px; margin:-3px 0 10px; flex-wrap:wrap}
+  .extras{display:flex; column-gap:16px; row-gap:4px; margin:-3px 0 10px; flex-wrap:wrap}
   .extras .ex{font-size:13.5px; font-weight:800; letter-spacing:-.01em}
   .extras .ek{font-size:11.5px; font-weight:700; color:var(--muted); margin-right:5px}
 
@@ -116,17 +116,15 @@
   .meta .k{font-size:10.5px; color:#9aa1ab; font-weight:700; letter-spacing:.01em; margin-bottom:2px}
   .meta .v{font-size:13.5px; font-weight:800; letter-spacing:-.01em}
 
-  /* 서류 버튼 */
-  .doc-btns{margin-top:10px; clear:both}
-  .doc-btns-row{display:flex; gap:7px; flex-wrap:wrap}
-  .doc-btns-row + .doc-btns-row{margin-top:7px}
+  /* 서류 버튼: 화면 폭과 무관하게 항상 3열 고정 */
+  .doc-btns{display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:7px; margin-top:10px; clear:both}
   .doc-btn{
     display:inline-flex; align-items:center; justify-content:center; gap:5px;
-    padding:6px 12px; border-radius:8px; font-size:12px; font-weight:700;
+    padding:6px 8px; border-radius:8px; font-size:11.5px; font-weight:700;
     line-height:1.25; text-align:center;
     text-decoration:none; border:1.5px solid var(--line);
     color:var(--muted); background:var(--surface);
-    transition:all .15s;
+    transition:all .15s; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .doc-btn:active{opacity:.75}
 
@@ -486,12 +484,18 @@ function fnum(v,dec){
 function extrasLine(d){
   const bits=[];
   const isNA=v=>(v==null||v===""||v==="-");
+  const escT=v=>String(v).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
   const cell=(label,v)=>{
     if(isNA(v)) return null;
     const n=Number(v); if(isNaN(n)) return null;
     return `<span class="ex"><span class="ek">${label}</span>${n>0?won(v):"없음"}</span>`;
   };
+  const txt=(label,v)=>{
+    if(isNA(v)) return null;
+    return `<span class="ex"><span class="ek">${label}</span>${escT(v)}</span>`;
+  };
   const m=cell("관리비",d.mgmt); if(m) bits.push(m);
+  const mv=txt("입주가능",d.movein); if(mv) bits.push(mv);
   return bits.length?`<div class="extras tnum">${bits.join("")}</div>`:"";
 }
 
@@ -512,6 +516,26 @@ function typeStyle(t){
 /* ===================== 렌더 ===================== */
 let currentItems=[];
 let HIDE_TRADE=false;
+let HIDE_PROPOSAL=false;
+let HIDE_EUM=false;
+function copyAddressForEum(addr){
+  if(!addr) return;
+  try{ navigator.clipboard.writeText(addr).catch(()=>{}); }catch(e){}
+  showEumToast('주소 복사됨 · 토지이음 검색창에 붙여넣기(꾹 누르기)만 하면 돼요');
+}
+function showEumToast(msg){
+  let el=document.getElementById('eumToast');
+  if(!el){
+    el=document.createElement('div');
+    el.id='eumToast';
+    el.style.cssText='position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:#15181E;color:#fff;padding:11px 16px;border-radius:10px;font-size:13px;font-weight:600;z-index:999;box-shadow:0 6px 20px rgba(0,0,0,.25);max-width:88vw;text-align:center;opacity:0;transition:opacity .2s;';
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  el.style.opacity='1';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{ el.style.opacity='0'; }, 2600);
+}
 function render(items){
   const list=document.getElementById("list");
   document.getElementById("cnt").textContent=items.length;
@@ -520,7 +544,17 @@ function render(items){
     list.innerHTML=`<div class="empty"><div class="em-t">추천 매물이 없습니다.</div><div class="em-s">담당자에게 문의해 주세요.</div></div>`;
     return;
   }
-  list.innerHTML=items.map((d,idx)=>`
+  list.innerHTML=items.map((d,idx)=>{
+    const btns=[
+      d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : '',
+      d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
+      d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : '',
+      (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
+      (!HIDE_TRADE && d.trade) ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : '',
+      (!HIDE_TRADE && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : '',
+      (!HIDE_EUM && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://www.eum.go.kr/web/am/amMain.jsp" target="_blank" onclick="copyAddressForEum('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏞️ 토지이음웹</a>` : ''
+    ].filter(Boolean);
+    return `
     <div class="card">
       <div class="card-top">
         <span class="tag t-type" style="${typeStyle(d.type)}">${d.type}</span>
@@ -535,18 +569,9 @@ function render(items){
         <div class="m"><div class="k">실측면적</div><div class="v tnum">${fnum(d.pyeong,1)}평</div></div>
         <div class="m"><div class="k">전용 m²</div><div class="v tnum">${fnum(d.m2,1)}m²</div></div>
       </div>
-      ${(d.bdoc||d.rdoc||d.note||(!HIDE_TRADE&&(d.trade||d.addr||d.bldg))) ? `<div class="doc-btns">
-        ${(d.bdoc || d.rdoc || d.note) ? `<div class="doc-btns-row">
-          ${d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : ''}
-          ${d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : ''}
-          ${d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''}
-        </div>` : ''}
-        ${(!HIDE_TRADE && (d.trade || d.addr || d.bldg)) ? `<div class="doc-btns-row">
-          ${d.trade ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : ''}
-          ${(d.addr||d.bldg) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : ''}
-        </div>` : ''}
-      </div>` : ''}
-    </div>`).join("");
+      ${btns.length ? `<div class="doc-btns">${btns.join("")}</div>` : ''}
+    </div>`;
+  }).join("");
 }
 
 /* ===================== 중개사 추천 멘트 팝업 ===================== */
@@ -687,6 +712,8 @@ window.addEventListener("orientationchange", ()=>setTimeout(syncHeaderSpacer, 20
 
 function applyResult(res){
   HIDE_TRADE = !!res.hideTrade;
+  HIDE_PROPOSAL = !!res.hideProposal;
+  HIDE_EUM = !!res.hideEum;
   // 고객명 배너
   if(res.clientName){
     document.getElementById("clientName").textContent = res.clientName + " 고객님";
