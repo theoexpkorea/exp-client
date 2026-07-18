@@ -551,12 +551,12 @@ function render(items){
       d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : '',
       d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
       d.docsMisc ? `<a class="doc-btn" href="${d.docsMisc}" target="_blank">🗂️ 제반서류함</a>` : '',
-      d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : '',
-      (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
       (!HIDE_TRADE_REPORT && d.tradeReport) ? `<a class="doc-btn" href="${d.tradeReport}" target="_blank">🧭 상권리포트</a>` : '',
       (!HIDE_TRADE && d.trade) ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : '',
       (!HIDE_SEMAS && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : '',
-      (!HIDE_EUM && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://www.eum.go.kr/web/am/amMain.jsp" target="_blank" onclick="copyAddressForEum('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏞️ 토지이음웹</a>` : ''
+      (!HIDE_EUM && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://www.eum.go.kr/web/am/amMain.jsp" target="_blank" onclick="copyAddressForEum('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏞️ 토지이음웹</a>` : '',
+      (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
+      d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''
     ].filter(Boolean);
     return `
     <div class="card">
