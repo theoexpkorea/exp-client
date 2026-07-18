@@ -364,7 +364,7 @@
     <div id="tradeSub" style="font-size:13px;color:var(--ink);font-weight:800;margin:-2px 0 8px"></div>
     <div id="tradeChips" style="display:flex;gap:6px;flex-wrap:wrap;margin:0 0 14px"></div>
     <div id="tradeBars" style="max-height:min(48vh,320px);overflow-y:auto;-webkit-overflow-scrolling:touch"></div>
-    <div style="font-size:11px;color:var(--muted);margin-top:12px">※ 공공데이터 추정자료로, 참고용으로만 활용하시기 바랍니다.</div>
+    <div style="font-size:11px;color:var(--muted);margin-top:12px">※ 소상공인시장진흥공단 상가업소 데이터 기준(반경 500m), 참고용 추정자료입니다.</div>
   </div>
 </div>
 
@@ -518,6 +518,8 @@ let currentItems=[];
 let HIDE_TRADE=false;
 let HIDE_PROPOSAL=false;
 let HIDE_EUM=false;
+let HIDE_SEMAS=false;
+let HIDE_TRADE_REPORT=false;
 function copyAddressForEum(addr){
   if(!addr) return;
   try{ navigator.clipboard.writeText(addr).catch(()=>{}); }catch(e){}
@@ -550,8 +552,9 @@ function render(items){
       d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
       d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : '',
       (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
+      (!HIDE_TRADE_REPORT && d.tradeReport) ? `<a class="doc-btn" href="${d.tradeReport}" target="_blank">🗺️ 상권리포트</a>` : '',
       (!HIDE_TRADE && d.trade) ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : '',
-      (!HIDE_TRADE && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : '',
+      (!HIDE_SEMAS && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : '',
       (!HIDE_EUM && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://www.eum.go.kr/web/am/amMain.jsp" target="_blank" onclick="copyAddressForEum('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏞️ 토지이음웹</a>` : ''
     ].filter(Boolean);
     return `
@@ -714,6 +717,8 @@ function applyResult(res){
   HIDE_TRADE = !!res.hideTrade;
   HIDE_PROPOSAL = !!res.hideProposal;
   HIDE_EUM = !!res.hideEum;
+  HIDE_SEMAS = !!res.hideSemas;
+  HIDE_TRADE_REPORT = !!res.hideTradeReport;
   // 고객명 배너
   if(res.clientName){
     document.getElementById("clientName").textContent = res.clientName + " 고객님";
