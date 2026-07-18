@@ -550,6 +550,7 @@ function render(items){
     const btns=[
       d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : '',
       d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
+      d.docsMisc ? `<a class="doc-btn" href="${d.docsMisc}" target="_blank">🗂️ 제반서류함</a>` : '',
       d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : '',
       (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
       (!HIDE_TRADE_REPORT && d.tradeReport) ? `<a class="doc-btn" href="${d.tradeReport}" target="_blank">🧭 상권리포트</a>` : '',
