@@ -96,8 +96,15 @@
   .tag.t-deal.월세{background:var(--wolse-bg); color:var(--wolse)}
   .tag.t-deal.단기임대{background:#E9EDF5; color:#5A6B86}
 
-  .thumb{float:right; width:84px; height:84px; border-radius:9px; overflow:hidden; margin:0 0 8px 12px; background:#EEF0F3}
+  .thumb{float:right; width:84px; height:84px; border-radius:9px; overflow:hidden; margin:0 0 8px 12px; background:#EEF0F3; cursor:zoom-in}
   .thumb img{width:100%; height:100%; object-fit:cover; display:block}
+
+  /* 사진 확대보기 라이트박스 */
+  .photo-lb{position:fixed; inset:0; background:rgba(10,12,16,.92); z-index:2000;
+    display:flex; align-items:center; justify-content:center; padding:24px;
+    opacity:0; pointer-events:none; transition:.2s; box-sizing:border-box}
+  .photo-lb.on{opacity:1; pointer-events:auto}
+  .photo-lb img{max-width:100%; max-height:100%; border-radius:10px; object-fit:contain; cursor:zoom-out}
   .bldg{font-size:16.5px; font-weight:800; letter-spacing:-.02em; line-height:1.3; margin:0 0 3px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
   .addr{font-size:12.5px; color:var(--muted); line-height:1.4; margin:0 0 11px;
@@ -315,6 +322,8 @@
   </div>
 </header>
 <div id="headerSpacer"></div>
+
+<div class="photo-lb" id="photoLb" onclick="closePhotoLb()"><img id="photoLbImg" src="" alt=""></div>
 
 <main id="list">
   <div class="loading">
@@ -564,7 +573,7 @@ function render(items){
         <span class="tag t-type" style="${typeStyle(d.type)}">${d.type}</span>
         <span class="tag t-deal ${d.deal}">${d.deal}</span>
       </div>
-      ${d.photo?`<div class="thumb"><img src="${d.photo}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.parentNode.style.display='none'"></div>`:""}
+      ${d.photo?`<div class="thumb" onclick="openPhotoLb('${d.photo.replace(/'/g,"\\'")}')"><img src="${d.photo}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.parentNode.style.display='none'"></div>`:""}
       <div class="bldg">${d.bldg||""}</div>
       <div class="addr">${d.addr||""}</div>
       <div class="price tnum">${priceLine(d)}</div>
@@ -576,6 +585,16 @@ function render(items){
       ${btns.length ? `<div class="doc-btns">${btns.join("")}</div>` : ''}
     </div>`;
   }).join("");
+}
+
+/* ===================== 사진 확대보기 라이트박스 ===================== */
+function openPhotoLb(url){
+  document.getElementById("photoLbImg").src = url;
+  document.getElementById("photoLb").classList.add("on");
+}
+function closePhotoLb(){
+  document.getElementById("photoLb").classList.remove("on");
+  document.getElementById("photoLbImg").src = "";
 }
 
 /* ===================== 중개사 추천 멘트 팝업 ===================== */
