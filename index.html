@@ -112,11 +112,11 @@
   .photo-lb-close:active{background:rgba(255,255,255,.28)}
   .bldg{font-size:16.5px; font-weight:800; letter-spacing:-.02em; line-height:1.3; margin:0 0 3px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
-  .addr-row{display:flex; align-items:flex-start; gap:5px; margin:0 0 11px}
+  .addr-row{margin:0 0 11px}
   .addr{font-size:12.5px; color:var(--muted); line-height:1.4; margin:0;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
-  .addr-map-link{flex-shrink:0; display:inline-flex; align-items:center; margin-top:1px;
-    color:#8a8d94; transition:color .15s}
+  .addr-map-link{display:inline-flex; align-items:center; vertical-align:-3px;
+    margin-left:4px; color:#8a8d94; transition:color .15s}
   .addr-map-link:active{color:#03C75A}
 
   .price{font-size:18px; font-weight:800; letter-spacing:-.02em; margin-bottom:10px}
@@ -593,8 +593,7 @@ function render(items){
       ${d.photo?`<div class="thumb" onclick="openPhotoLb('${d.photo.replace(/'/g,"\\'")}')"><img src="${d.photo}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.parentNode.style.display='none'"></div>`:""}
       <div class="bldg">${d.bldg||""}</div>
       <div class="addr-row">
-        <div class="addr">${d.addr||""}</div>
-        ${d.addr?`<a class="addr-map-link" href="${naverMapUrl(d.addr)}" target="_blank" aria-label="네이버지도에서 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>`:''}
+        <div class="addr">${d.addr||""}${d.addr?`<a class="addr-map-link" href="${naverMapUrl(d.addr)}" target="_blank" aria-label="네이버지도에서 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>`:''}</div>
       </div>
       <div class="price tnum">${priceLine(d)}</div>
       ${extrasLine(d)}
