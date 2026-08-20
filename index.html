@@ -105,6 +105,11 @@
     opacity:0; pointer-events:none; transition:.2s; box-sizing:border-box}
   .photo-lb.on{opacity:1; pointer-events:auto}
   .photo-lb img{max-width:100%; max-height:100%; border-radius:10px; object-fit:contain; cursor:zoom-out}
+  .photo-lb-close{position:absolute; top:16px; right:16px; z-index:2001;
+    width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.14); color:#fff; transition:background .15s}
+  .photo-lb-close:active{background:rgba(255,255,255,.28)}
   .bldg{font-size:16.5px; font-weight:800; letter-spacing:-.02em; line-height:1.3; margin:0 0 3px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
   .addr{font-size:12.5px; color:var(--muted); line-height:1.4; margin:0 0 11px;
@@ -323,7 +328,10 @@
 </header>
 <div id="headerSpacer"></div>
 
-<div class="photo-lb" id="photoLb" onclick="closePhotoLb()"><img id="photoLbImg" src="" alt=""></div>
+<div class="photo-lb" id="photoLb" onclick="closePhotoLb()">
+  <button class="photo-lb-close" onclick="closePhotoLb()" aria-label="닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+  <img id="photoLbImg" src="" alt="">
+</div>
 
 <main id="list">
   <div class="loading">
@@ -558,6 +566,7 @@ function render(items){
   list.innerHTML=items.map((d,idx)=>{
     const btns=[
       d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : '',
+      d.landDoc ? `<a class="doc-btn" href="${d.landDoc}" target="_blank">🧾 토지대장등</a>` : '',
       d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
       d.docsMisc ? `<a class="doc-btn" href="${d.docsMisc}" target="_blank">🗂️ 제반서류함</a>` : '',
       (!HIDE_TRADE_REPORT && d.tradeReport) ? `<a class="doc-btn" href="${d.tradeReport}" target="_blank">🧭 상권리포트</a>` : '',
