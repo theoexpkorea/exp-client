@@ -541,6 +541,7 @@ let HIDE_PROPOSAL=false;
 let HIDE_EUM=false;
 let HIDE_SEMAS=false;
 let HIDE_TRADE_REPORT=false;
+let HIDE_CONTACT=false;
 function naverMapUrl(addr){
   if(!addr) return '';
   return 'https://map.naver.com/p/search/' + encodeURIComponent(addr);
@@ -726,7 +727,9 @@ async function boot(){
       if(res.error === "EXPIRED"){
         document.getElementById("clientBanner").style.display = "none";
         document.getElementById("cnt").textContent = "0";
-        document.querySelector(".contact-bar").style.display = "flex";
+        if(!res.hideContact){
+          document.querySelector(".contact-bar").style.display = "flex";
+        }
         document.getElementById("list").innerHTML=
           `<div class="empty"><div class="em-t">추천이 종료되었습니다.</div><div class="em-s">새로운 매물 추천이 필요하시면<br>아래 버튼으로 문의해 주세요.</div></div>`;
       } else {
@@ -758,6 +761,7 @@ function applyResult(res){
   HIDE_EUM = !!res.hideEum;
   HIDE_SEMAS = !!res.hideSemas;
   HIDE_TRADE_REPORT = !!res.hideTradeReport;
+  HIDE_CONTACT = !!res.hideContact;
   // 고객명 배너
   if(res.clientName){
     document.getElementById("clientName").textContent = res.clientName + " 고객님";
@@ -775,8 +779,8 @@ function applyResult(res){
     document.getElementById("clientBanner").style.display = "flex";
   }
 
-  // 중개사면 버튼 숨김, 고객이면 표시
-  if(!res.isAgent){
+  // 중개사면 버튼 숨김, 고객이면 표시 (단, 연락버튼 숨김 옵션이 켜져 있으면 고객이어도 숨김)
+  if(!res.isAgent && !HIDE_CONTACT){
     document.querySelector(".contact-bar").style.display = "flex";
   }
 
