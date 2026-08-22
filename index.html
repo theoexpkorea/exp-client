@@ -96,20 +96,31 @@
   .tag.t-deal.월세{background:var(--wolse-bg); color:var(--wolse)}
   .tag.t-deal.단기임대{background:#E9EDF5; color:#5A6B86}
 
-  .thumb{float:right; width:84px; height:84px; border-radius:9px; overflow:hidden; margin:0 0 8px 12px; background:#EEF0F3; cursor:zoom-in}
+  .thumb{float:right; width:84px; height:84px; border-radius:9px; overflow:hidden; margin:0 0 8px 12px; background:#EEF0F3; cursor:zoom-in; position:relative}
   .thumb img{width:100%; height:100%; object-fit:cover; display:block}
+  .thumb-count{position:absolute; top:4px; right:4px; background:rgba(10,12,16,.72); color:#fff;
+    font-size:10.5px; font-weight:700; padding:2px 6px; border-radius:20px; line-height:1.3}
 
   /* 사진 확대보기 라이트박스 */
   .photo-lb{position:fixed; inset:0; background:rgba(10,12,16,.92); z-index:2000;
     display:flex; align-items:center; justify-content:center; padding:24px;
     opacity:0; pointer-events:none; transition:.2s; box-sizing:border-box}
   .photo-lb.on{opacity:1; pointer-events:auto}
-  .photo-lb img{max-width:100%; max-height:100%; border-radius:10px; object-fit:contain; cursor:zoom-out}
+  .photo-lb img{max-width:100%; max-height:100%; width:auto; height:auto; border-radius:10px; object-fit:contain; cursor:zoom-out}
   .photo-lb-close{position:absolute; top:16px; right:16px; z-index:2001;
     width:38px; height:38px; border-radius:50%; border:none; cursor:pointer;
     display:flex; align-items:center; justify-content:center;
     background:rgba(255,255,255,.14); color:#fff; transition:background .15s}
   .photo-lb-close:active{background:rgba(255,255,255,.28)}
+  .photo-lb-nav{position:absolute; top:50%; transform:translateY(-50%); z-index:2001;
+    width:44px; height:44px; border-radius:50%; border:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(255,255,255,.14); color:#fff; transition:background .15s}
+  .photo-lb-nav:active{background:rgba(255,255,255,.28)}
+  .photo-lb-prev{left:12px}
+  .photo-lb-next{right:12px}
+  .photo-lb-count{position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:2001;
+    background:rgba(0,0,0,.5); color:#fff; font-size:12.5px; padding:4px 12px; border-radius:20px}
   .bldg{font-size:16.5px; font-weight:800; letter-spacing:-.02em; line-height:1.3; margin:0 0 3px;
     display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden}
   .addr-row{margin:0 0 11px}
@@ -333,8 +344,11 @@
 <div id="headerSpacer"></div>
 
 <div class="photo-lb" id="photoLb" onclick="closePhotoLb()">
-  <button class="photo-lb-close" onclick="closePhotoLb()" aria-label="닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
-  <img id="photoLbImg" src="" alt="">
+  <button class="photo-lb-close" onclick="event.stopPropagation();closePhotoLb()" aria-label="닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="4" y1="4" x2="20" y2="20"/><line x1="20" y1="4" x2="4" y2="20"/></svg></button>
+  <button class="photo-lb-nav photo-lb-prev" id="photoLbPrev" onclick="event.stopPropagation();photoLbNav(-1)" aria-label="이전 사진"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+  <img id="photoLbImg" src="" alt="" onclick="event.stopPropagation()">
+  <button class="photo-lb-nav photo-lb-next" id="photoLbNext" onclick="event.stopPropagation();photoLbNav(1)" aria-label="다음 사진"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></button>
+  <div class="photo-lb-count" id="photoLbCount"></div>
 </div>
 
 <main id="list">
@@ -568,6 +582,7 @@ function render(items){
   const list=document.getElementById("list");
   document.getElementById("cnt").textContent=items.length;
   currentItems=items;
+  PHOTO_SETS = [];
   if(!items.length){
     list.innerHTML=`<div class="empty"><div class="em-t">추천 매물이 없습니다.</div><div class="em-s">담당자에게 문의해 주세요.</div></div>`;
     return;
@@ -583,6 +598,7 @@ function render(items){
       (!HIDE_SEMAS && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://bigdata.sbiz.or.kr/#/hotplace/gis" target="_blank">📊 소상공인365</a>` : '',
       (!HIDE_EUM && (d.addr||d.bldg)) ? `<a class="doc-btn" href="https://www.eum.go.kr/web/am/amMain.jsp" target="_blank" onclick="copyAddressForEum('${(d.addr||d.bldg||'').replace(/'/g,"\\'")}')">🏞️ 토지이음웹</a>` : '',
       (!HIDE_PROPOSAL && d.proposal) ? `<a class="doc-btn" href="${d.proposal}" target="_blank">📑 매물제안서</a>` : '',
+      d.youtube ? `<a class="doc-btn" href="${d.youtube}" target="_blank">🎬 매물영상</a>` : '',
       d.note ? `<button class="doc-btn" onclick="openNote(${idx})">🗨️ 추천 코멘트</button>` : ''
     ].filter(Boolean);
     return `
@@ -591,7 +607,7 @@ function render(items){
         <span class="tag t-type" style="${typeStyle(d.type)}">${d.type}</span>
         <span class="tag t-deal ${d.deal}">${d.deal}</span>
       </div>
-      ${d.photo?`<div class="thumb" onclick="openPhotoLb('${d.photo.replace(/'/g,"\\'")}')"><img src="${d.photo}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.parentNode.style.display='none'"></div>`:""}
+      ${d.photos && d.photos.length ? `<div class="thumb" onclick="openPhotoLb(${regPhotos(d.photos)})"><img src="${d.photos[0].thumb}" loading="lazy" referrerpolicy="no-referrer" alt="" onerror="this.parentNode.style.display='none'">${d.photos.length>1 ? `<span class="thumb-count">+${d.photos.length-1}</span>` : ''}</div>`:""}
       <div class="bldg">${d.bldg||""}</div>
       <div class="addr-row">
         <div class="addr">${d.addr||""}${d.addr?`<a class="addr-map-link" href="${naverMapUrl(d.addr)}" target="_blank" aria-label="네이버지도에서 보기"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11z"/><circle cx="12" cy="10" r="2.5"/></svg></a>`:''}</div>
@@ -607,15 +623,73 @@ function render(items){
   }).join("");
 }
 
-/* ===================== 사진 확대보기 라이트박스 ===================== */
-function openPhotoLb(url){
-  document.getElementById("photoLbImg").src = url;
+/* ===================== 사진 확대보기 라이트박스 (여러 장 갤러리) ===================== */
+var PHOTO_SETS = [];
+var photoLbCur = null;
+
+function regPhotos(photos){
+  PHOTO_SETS.push(photos);
+  return PHOTO_SETS.length - 1;
+}
+function openPhotoLb(setIdx){
+  var photos = PHOTO_SETS[setIdx];
+  if(!photos || !photos.length) return;
+  photoLbCur = { photos: photos, idx: 0 };
+  renderPhotoLb();
   document.getElementById("photoLb").classList.add("on");
+}
+function renderPhotoLb(){
+  if(!photoLbCur) return;
+  var p = photoLbCur.photos[photoLbCur.idx];
+  document.getElementById("photoLbImg").src = (p.full || p.thumb || p);
+  var multi = photoLbCur.photos.length > 1;
+  document.getElementById("photoLbPrev").style.display = multi ? "flex" : "none";
+  document.getElementById("photoLbNext").style.display = multi ? "flex" : "none";
+  var countEl = document.getElementById("photoLbCount");
+  if(multi){
+    countEl.style.display = "block";
+    countEl.textContent = (photoLbCur.idx + 1) + " / " + photoLbCur.photos.length;
+  } else {
+    countEl.style.display = "none";
+  }
+}
+function photoLbNav(dir){
+  if(!photoLbCur) return;
+  var n = photoLbCur.photos.length;
+  photoLbCur.idx = (photoLbCur.idx + dir + n) % n;
+  renderPhotoLb();
 }
 function closePhotoLb(){
   document.getElementById("photoLb").classList.remove("on");
   document.getElementById("photoLbImg").src = "";
+  photoLbCur = null;
 }
+document.addEventListener("keydown", function(e){
+  if(!document.getElementById("photoLb").classList.contains("on")) return;
+  if(e.key === "Escape") closePhotoLb();
+  else if(e.key === "ArrowLeft") photoLbNav(-1);
+  else if(e.key === "ArrowRight") photoLbNav(1);
+});
+(function(){
+  var startX = null, startY = null;
+  var box = document.getElementById("photoLb");
+  box.addEventListener("touchstart", function(e){
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+  }, {passive:true});
+  box.addEventListener("touchmove", function(e){
+    if(startX === null) return;
+    var dx = e.touches[0].clientX - startX;
+    var dy = e.touches[0].clientY - startY;
+    if(Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 10) e.preventDefault();
+  }, {passive:false});
+  box.addEventListener("touchend", function(e){
+    if(startX === null) return;
+    var dx = e.changedTouches[0].clientX - startX;
+    if(Math.abs(dx) > 40) photoLbNav(dx > 0 ? -1 : 1);
+    startX = null; startY = null;
+  }, {passive:true});
+})();
 
 /* ===================== 중개사 추천 멘트 팝업 ===================== */
 function openNote(idx){
