@@ -556,6 +556,7 @@ let HIDE_EUM=false;
 let HIDE_SEMAS=false;
 let HIDE_TRADE_REPORT=false;
 let HIDE_CONTACT=false;
+let HIDE_REGISTRY=false;
 function naverMapUrl(addr){
   if(!addr) return '';
   return 'https://map.naver.com/p/search/' + encodeURIComponent(addr);
@@ -591,7 +592,7 @@ function render(items){
     const btns=[
       d.bdoc ? `<a class="doc-btn" href="${d.bdoc}" target="_blank">📄 건축물대장</a>` : '',
       d.landDoc ? `<a class="doc-btn" href="${d.landDoc}" target="_blank">🧾 토지대장등</a>` : '',
-      d.rdoc ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
+      (!HIDE_REGISTRY && d.rdoc) ? `<a class="doc-btn" href="${d.rdoc}" target="_blank">📋 등기부등본</a>` : '',
       d.docsMisc ? `<a class="doc-btn" href="${d.docsMisc}" target="_blank">🗂️ 제반서류함</a>` : '',
       (!HIDE_TRADE_REPORT && d.tradeReport) ? `<a class="doc-btn" href="${d.tradeReport}" target="_blank">🧭 상권리포트</a>` : '',
       (!HIDE_TRADE && d.trade) ? `<button class="doc-btn" onclick="openTrade(${idx})">🏪 상권점포수</button>` : '',
@@ -836,6 +837,7 @@ function applyResult(res){
   HIDE_SEMAS = !!res.hideSemas;
   HIDE_TRADE_REPORT = !!res.hideTradeReport;
   HIDE_CONTACT = !!res.hideContact;
+  HIDE_REGISTRY = !!res.hideRegistry;
   // 고객명 배너
   if(res.clientName){
     document.getElementById("clientName").textContent = res.clientName + " 고객님";
